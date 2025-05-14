@@ -1,0 +1,42 @@
+name: 'SolidStart Deploy'
+description: 'A composite action that prepares your SolidStart SSG site to be deployed to GitHub Pages'
+branding:
+    icon: 'arrow-up-right'
+    color: 'blue'
+
+inputs:
+    path:
+        description: 'Path of the directory containing your site'
+        required: false
+        default: '.'
+
+runs:
+    using: composite
+    steps:
+        - name: Setup PNPM
+          uses: pnpm/action-setup@v4
+          with:
+              version: latest
+              package_json_file: '${{ inputs.path }}/package.json'
+
+        - name: Setup Node
+          uses: actions/setup-node@v4
+          with:
+              node-version: 22
+              cache: pnpm
+              cache-dependency-path: '${{ inputs.path }}/pnpm-lock.yaml'
+
+        - name: Install
+          shell: bash
+          working-directory: ${{ inputs.path }}
+          run: pnpm install
+
+        - name: Build
+          shell: bash
+          working-directory: ${{ inputs.path }}
+          run: pnpm build
+
+        - name: Upload Pages Artifact
+          uses: actions/upload-pages-artifact@v3
+          with:
+              path: '${{ inputs.path }}/.output/public/'
