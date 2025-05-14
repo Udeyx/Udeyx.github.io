@@ -16,8 +16,5 @@
     },
     "engines": {
         "node": ">=22"
-    },
-    "pnpm": {
-        "neverBuiltDependencies": []
     }
 }
